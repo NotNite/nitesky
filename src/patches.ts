@@ -20,8 +20,13 @@ export const patches: WebpackToolsPatch[] = [
         replacement: `brandBlue:"${newColor}"`
       },
       {
-        match: /primary_(\d{2,3}):`hsl\(\${t.primary}, 99%, (\d{1,2})%\)`/g,
-        replacement: (_, num, percent) => `primary_${num}:\`${newColor}\``
+        match: /{primary:(.{1,2}),negative:(.{1,2}),positive:(.{1,2})}/g,
+        replacement: (_, primary, negative, positive) =>
+          `{primary:358,negative:358,positive:358}` // lol
+      },
+      {
+        match: /like:"#[0-9a-fA-F]{6}"/g,
+        replacement: `like:"${newColor}"`
       }
     ]
   },
