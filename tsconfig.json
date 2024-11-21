@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "es6",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "moduleResolution": "bundler",
+    "jsx": "react",
+    "noEmit": true,
+
+    "skipLibCheck": true,
+    "allowUnreachableCode": true
+  },
+  "include": ["./src/**/*", "./env.d.ts"],
+  "exclude": ["node_modules"]
+}
