@@ -69,6 +69,7 @@ if (settings.customAccent != null) {
 }
 
 if (settings.noJpeg) {
+  // This targets what I think is the gallery thumbnails?
   const regex = /source:(.\(.\)),placeholder:/;
   patches.push({
     name: "noJpeg",
@@ -82,6 +83,8 @@ if (settings.noJpeg) {
     }
   });
 
+  // This targets the function that makes the `background-image: url()` style
+  // I think this is the Expo image component? Maybe?
   patches.push({
     name: "noJpeg2",
     find: "Image: asset with ID ",
