@@ -1,10 +1,12 @@
 type Settings = {
   customAccent: string | null;
+  noJpeg: boolean;
 };
 
 const localStorageKey = "nitesky-settings";
-const defaultSettings = {
-  customAccent: "#CB2027"
+const defaultSettings: Settings = {
+  customAccent: "#CB2027",
+  noJpeg: true
 };
 
 function readSettings(): Settings {
@@ -12,7 +14,9 @@ function readSettings(): Settings {
   if (settings == null) {
     return JSON.parse(JSON.stringify(defaultSettings));
   } else {
-    return JSON.parse(settings);
+    let obj: Settings = JSON.parse(settings);
+    obj = { ...defaultSettings, ...obj };
+    return obj;
   }
 }
 

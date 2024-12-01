@@ -67,3 +67,28 @@ if (settings.customAccent != null) {
     }
   });
 }
+
+if (settings.noJpeg) {
+  const regex = /source:(.\(.\)),placeholder:/;
+  patches.push({
+    name: "noJpeg",
+    find: regex,
+    replace: {
+      match: regex,
+      replacement: (_, img) => `source:${img}.map((img) => {
+        const fix = (src) => src?.replace("@jpeg", "@png");
+        return typeof img === "string" ? fix(img) : { ...img, uri: fix(img.uri) };
+      }),placeholder:`
+    }
+  });
+
+  patches.push({
+    name: "noJpeg2",
+    find: "Image: asset with ID ",
+    replace: {
+      match: /\.uri\);if\((.)\){/,
+      replacement: (_, src) =>
+        `.uri);if(${src}){${src}=${src}.replace("@jpeg", "@png");`
+    }
+  });
+}
