@@ -29,6 +29,8 @@ npm run build
 
 For normal usage, add `nitesky.user.js` to your userscript manager. If you have a webserver (e.g. `npx serve`), you can get live reload using [Violentmonkey](https://violentmonkey.github.io/) and `npm run dev`.
 
+There's no settings menu, just edit `nitesky-settings` in localStorage.
+
 ## Credits
 
 nitesky uses [webpackTools](https://github.com/moonlight-mod/webpackTools) for patching, and some code (build script/types) is taken from [moonlight](https://github.com/moonlight-mod/moonlight).
