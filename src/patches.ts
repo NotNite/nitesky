@@ -1,13 +1,13 @@
-import { WebpackToolsPatch } from "./types";
 import { settings } from "./settings";
+import { WebpackToolsPatch } from "./types";
 
 export const patches: WebpackToolsPatch[] = [];
 
 if (settings.customAccent != null) {
   function rgbToHsl(rgb: string): number {
-    const r = parseInt(rgb.slice(1, 3), 16) / 255;
-    const g = parseInt(rgb.slice(3, 5), 16) / 255;
-    const b = parseInt(rgb.slice(5, 7), 16) / 255;
+    const r = parseInt(rgb.slice(0, 2), 16) / 255;
+    const g = parseInt(rgb.slice(2, 4), 16) / 255;
+    const b = parseInt(rgb.slice(4, 6), 16) / 255;
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
@@ -27,7 +27,9 @@ if (settings.customAccent != null) {
     return h;
   }
 
-  const hue = rgbToHsl(settings.customAccent);
+  let accent = settings.customAccent;
+  if (accent.startsWith("#")) accent = accent.slice(1);
+  const hue = rgbToHsl(accent);
 
   patches.push({
     name: "brandColor",
@@ -35,20 +37,19 @@ if (settings.customAccent != null) {
     replace: [
       {
         match: /blue(.):"#[0-9a-fA-F]{6}"/g,
-        replacement: (_, digit) => `blue${digit}:"${settings.customAccent}"`
+        replacement: (_, digit) => `blue${digit}:"#${accent}"`
       },
       {
         match: /{start:"#[0-9a-fA-F]{6}",end:(.{1,3}\.blue3)}/g,
-        replacement: (_, end) => `{start:"${settings.customAccent}",end:${end}}`
+        replacement: (_, end) => `{start:"#${accent}",end:${end}}`
       },
       {
         match: /brandBlue:"#[0-9a-fA-F]{6}"/g,
-        replacement: `brandBlue:"${settings.customAccent}"`
+        replacement: `brandBlue:"#${accent}"`
       },
       {
         match: /{primary:(.{1,2}),negative:(.{1,2}),positive:(.{1,2})}/g,
-        replacement: (_, primary, negative, positive) =>
-          `{primary:${hue},negative:${hue},positive:${hue}}` // lol
+        replacement: (_, _primary, _negative, _positive) => `{primary:${hue},negative:${hue},positive:${hue}}` // lol
       },
       {
         match: /like:"#[0-9a-fA-F]{6}"/g,
@@ -63,7 +64,7 @@ if (settings.customAccent != null) {
     find: /#1083fe/g,
     replace: {
       match: /#1083fe/g,
-      replacement: settings.customAccent
+      replacement: "#" + accent
     }
   });
 }
@@ -76,7 +77,8 @@ if (settings.noJpeg) {
     find: regex,
     replace: {
       match: regex,
-      replacement: (_, img) => `source:${img}.map((img) => {
+      replacement: (_, img) =>
+        `source:${img}.map((img) => {
         const fix = (src) => src?.replace("@jpeg", "@png");
         return typeof img === "string" ? fix(img) : { ...img, uri: fix(img.uri) };
       }),placeholder:`
@@ -90,8 +92,7 @@ if (settings.noJpeg) {
     find: "Image: asset with ID ",
     replace: {
       match: /\.uri\);if\((.)\){/,
-      replacement: (_, src) =>
-        `.uri);if(${src}){${src}=${src}.replace("@jpeg", "@png");`
+      replacement: (_, src) => `.uri);if(${src}){${src}=${src}.replace("@jpeg", "@png");`
     }
   });
 }

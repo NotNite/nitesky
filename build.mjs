@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 // This build script is a bunch of dumb hacks to keep it in one build
 import * as esbuild from "esbuild";
-import path from "path";
 import fs from "fs";
+import path from "path";
 
 const prod = process.env.NODE_ENV === "production";
 const watch = process.argv.includes("--watch");
@@ -47,6 +47,8 @@ const banner = `
 // @version      1.0.0
 // @description  Bluesky client mod
 // @author       NotNite
+// @homepageURL  https://github.com/NotNite/nitesky
+// @downloadURL  https://notnite.github.io/nitesky/nitesky.user.js
 // @include      https://bsky.app/*
 // @grant        GM_addElement
 // @run-at       document-start
@@ -76,13 +78,15 @@ const packager = {
         }
       }
 
-      const final =
-        banner +
-        template
+      const final = banner
+        + template
           .replace("NITESKY_WP_MODULES", JSON.stringify(webpackModules))
           // Dumb hack to dodge globalName
           .replace("var nitesky =", "");
-      fs.writeFileSync("nitesky.user.js", final);
+
+      // jank as hell lol
+      if (!fs.existsSync("./dist")) fs.mkdirSync("./dist");
+      fs.writeFileSync("./dist/nitesky.user.js", final);
     });
   }
 };

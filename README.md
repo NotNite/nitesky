@@ -4,21 +4,35 @@ A Bluesky client mod.
 
 > [!WARNING]
 >
-> This isn't meant for end users, this is mostly just my own personal tweaks. It's also mostly a proof of concept and doesn't have any features at the moment. PRs welcome :)
+> **This is not meant for end users.** I designed nitesky for myself and people who can debug when something goes wrong. It's also mostly a proof of concept and there aren't a lot of features. If you are expecting a polished Bluesky mod, this isn't it.
+>
+> I will not help you troubleshoot installing or building nitesky. nitesky may break or cause issues with the site, and I cannot promise I will fix those issues immediately. However, I have been using it daily for several months without issue. You've been warned.
 >
 > ![Gif of a guy working with various power tools](https://hl2.sh/guy_constructing_the_thing.gif)
 
----
+## Motivation
 
-Modding sites is fun! [Open source apps are more fun!](https://github.com/bluesky-social/social-app) But sometimes there are ideas that don't deserve a PR, and forking + hosting can be too much effort for a silly project idea. This is a userscript that should hopefully make it easy to pull off those silly ideas.
+I like modding the apps I use. Bluesky's [social-app](https://github.com/bluesky-social/social-app) is open source, so modding Bluesky might seem a little silly when the code is right there. However, I don't want to maintain a fork. I'd have to constantly merge new updates from upstream and then build and host it somewhere.
 
-## Building
+nitesky is a lot more unstable and a lot less flexible, but it's a tradeoff.nitesky uses [webpackTools][webpackTools] to dynamically patch the minified JavaScript. It works on my browser locally, without having to recompile the web app, and it's faster to fix when it breaks.
+
+## Installation
 
 > [!WARNING]
 >
-> Install an extension like [Privacy Badger](https://privacybadger.org/) to block Sentry from making requests. Don't spam the Bluesky team with your errors.
+> Don't spam Bluesky team with your errors. Block Sentry from making requests (e.g. [uBlock Origin](https://ublockorigin.com/)). This isn't a requirement, but you should it [because they ask nicely](https://github.com/bluesky-social/social-app?tab=readme-ov-file#forking-guidelines).
 
-Clone and run the build script:
+nitesky can be installed using a userscript manager by going to <https://notnite.github.io/nitesky/nitesky.user.js>. There's no update checking, so make sure to go back to the script and update it manually if your userscript manager doesn't do it for you.
+
+## Settings
+
+nitesky doesn't have a GUI for settings (yet?), just edit `nitesky-settings` in localStorage. Available keys:
+
+- `customAccent`: Use a custom theme for the site (e.g. `CB2027`)
+- `noJpeg`: Use PNG instead of JPG when loading images, will cause images to load slower (default: true)
+- `forceDidLink`: Copies links with the user's DID instead of their handle (default: true)
+
+## Building
 
 ```shell
 git clone https://github.com/NotNite/nitesky.git
@@ -27,10 +41,13 @@ npm i
 npm run build
 ```
 
-For normal usage, add `nitesky.user.js` to your userscript manager. If you have a webserver (e.g. `npx serve`), you can get live reload using [Violentmonkey](https://violentmonkey.github.io/) and `npm run dev`.
+For building nitesky, just run `npm run build` and add `nitesky.user.js` to your userscript manager. You can get hot reload with `npm run dev`, a local web server (e.g. `npx serve`), and a userscript manager that can poll for updates (e.g. Violentmonkey's "Track external edits" button).
 
-There's no settings menu, just edit `nitesky-settings` in localStorage.
+It's suggested to use Chrome for developing because it has better DevTools for inspecting Webpack modules. The build system is a hacked together abomination using esbuild, based off of [moonlight][moonlight]'s old build scripts. The [webpackTools][webpackTools] runtime is updated by hand when I feel like it. For contributing, please format with [dprint](https://dprint.dev/). There's also ESLint but I don't really care about it to be honest.
 
 ## Credits
 
-nitesky uses [webpackTools](https://github.com/moonlight-mod/webpackTools) for patching, and some code (build script/types) is taken from [moonlight](https://github.com/moonlight-mod/moonlight).
+nitesky uses [webpackTools][webpackTools] for patching. Some other code (build script/types) is taken from [moonlight][moonlight].
+
+[webpackTools]: <https://github.com/moonlight-mod/webpackTools>
+[moonlight]: <https://github.com/moonlight-mod/moonlight>

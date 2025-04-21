@@ -1,12 +1,12 @@
 type Settings = {
-  customAccent: string | null;
+  customAccent?: string;
   noJpeg: boolean;
   forceDidLink: boolean;
 };
 
 const localStorageKey = "nitesky-settings";
 const defaultSettings: Settings = {
-  customAccent: "#CB2027",
+  customAccent: undefined,
   noJpeg: true,
   forceDidLink: true
 };

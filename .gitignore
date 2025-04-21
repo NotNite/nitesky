@@ -1,3 +1,4 @@
 node_modules/
-eslint_report.json
+dist/
 *.user.js
+eslint_report.json
