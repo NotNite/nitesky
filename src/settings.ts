@@ -2,13 +2,15 @@ type Settings = {
   customAccent?: string;
   noJpeg: boolean;
   forceDidLink: boolean;
+  noVia: boolean;
 };
 
 const localStorageKey = "nitesky-settings";
 const defaultSettings: Settings = {
   customAccent: undefined,
   noJpeg: true,
-  forceDidLink: true
+  forceDidLink: true,
+  noVia: true
 };
 
 function readSettings(): Settings {

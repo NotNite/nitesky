@@ -110,3 +110,14 @@ if (settings.forceDidLink) {
     }
   });
 }
+
+if (settings.noVia) {
+  patches.push({
+    name: "noVia",
+    find: "toISOString(),via:",
+    replace: {
+      match: /(?<=\.toISOString\(\)),via:./g,
+      replacement: ""
+    }
+  });
+}

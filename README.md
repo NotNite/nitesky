@@ -31,6 +31,7 @@ nitesky doesn't have a GUI for settings (yet?), just edit `nitesky-settings` in 
 - `customAccent`: Use a custom theme for the site (e.g. `CB2027`)
 - `noJpeg`: Use PNG instead of JPG when loading images, will cause images to load slower (default: true)
 - `forceDidLink`: Copies links with the user's DID instead of their handle (default: true)
+- `noVia`: Do not notify reposters of likes and reposts (default: true)
 
 ## Building
 
