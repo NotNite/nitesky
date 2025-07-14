@@ -12,15 +12,15 @@ A Bluesky client mod.
 
 ## Motivation
 
-I like modding the apps I use. Bluesky's [social-app](https://github.com/bluesky-social/social-app) is open source, so modding Bluesky might seem a little silly when the code is right there. However, I don't want to maintain a fork. I'd have to constantly merge new updates from upstream and then build and host it somewhere.
+I like modding the apps I use! Bluesky's [social-app](https://github.com/bluesky-social/social-app) is open source, so modding Bluesky might seem a little silly when the code is right there. However, I don't want to maintain a fork; I'd have to constantly merge new updates from upstream and then build and host it somewhere.
 
-nitesky is a lot more unstable and a lot less flexible, but it's a tradeoff.nitesky uses [webpackTools][webpackTools] to dynamically patch the minified JavaScript. It works on my browser locally, without having to recompile the web app, and it's faster to fix when it breaks.
+nitesky is a lot more unstable and a lot less flexible, but it's a tradeoff with required maintenance, as nitesky uses [webpackTools][webpackTools] to dynamically patch the minified JavaScript at runtime. I don't have to maintain or build a fork, and it's faster to fix nitesky when it breaks.
 
 ## Installation
 
 > [!WARNING]
 >
-> Don't spam Bluesky team with your errors. Block Sentry from making requests (e.g. [uBlock Origin](https://ublockorigin.com/)). This isn't a requirement, but you should it [because they ask nicely](https://github.com/bluesky-social/social-app?tab=readme-ov-file#forking-guidelines).
+> Don't spam the Bluesky team with your errors. Block Sentry from making requests (e.g. [uBlock Origin](https://ublockorigin.com/)). This isn't a requirement, but you should do it [because they ask nicely](https://github.com/bluesky-social/social-app?tab=readme-ov-file#forking-guidelines).
 
 nitesky can be installed using a userscript manager by going to <https://notnite.github.io/nitesky/nitesky.user.js>. There's no update checking, so make sure to go back to the script and update it manually if your userscript manager doesn't do it for you.
 
@@ -44,7 +44,7 @@ npm run build
 
 For building nitesky, just run `npm run build` and add `nitesky.user.js` to your userscript manager. You can get hot reload with `npm run dev`, a local web server (e.g. `npx serve`), and a userscript manager that can poll for updates (e.g. Violentmonkey's "Track external edits" button).
 
-It's suggested to use Chrome for developing because it has better DevTools for inspecting Webpack modules. The build system is a hacked together abomination using esbuild, based off of [moonlight][moonlight]'s old build scripts. The [webpackTools][webpackTools] runtime is updated by hand when I feel like it. For contributing, please format with [dprint](https://dprint.dev/). There's also ESLint but I don't really care about it to be honest.
+It's suggested to use Chrome for developing, because it has better DevTools for inspecting Webpack modules. The build system is a hacked together abomination using esbuild, based off of [moonlight][moonlight]'s old build scripts. The [webpackTools][webpackTools] runtime is updated by hand when I feel like it. For contributing, please format with [dprint](https://dprint.dev/). There's also ESLint but I don't really care about it to be honest.
 
 ## Credits
 
