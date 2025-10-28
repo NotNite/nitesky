@@ -8,7 +8,7 @@ A Bluesky client mod.
 >
 > I will not help you troubleshoot installing or building nitesky. nitesky may break or cause issues with the site, and I cannot promise I will fix those issues immediately. However, I have been using it daily for several months without issue. You've been warned.
 >
-> ![Gif of a guy working with various power tools](https://hl2.sh/guy_constructing_the_thing.gif)
+> ![Gif of a guy working with various power tools](https://fxdiscord.com/i/tjnntorqi4.gif)
 
 ## Motivation
 
