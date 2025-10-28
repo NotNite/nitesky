@@ -1,0 +1,12 @@
+{
+  "formatter": {
+    "external": {
+      "command": "dprint",
+      "arguments": [
+        "fmt",
+        "--stdin",
+        "{buffer_path}"
+      ]
+    }
+  }
+}
