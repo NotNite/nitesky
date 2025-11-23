@@ -32,6 +32,7 @@ nitesky doesn't have a GUI for settings (yet?), just edit `nitesky-settings` in 
 - `noJpeg`: Use PNG instead of JPG when loading images, will cause images to load slower (default: true)
 - `forceDidLink`: Copies links with the user's DID instead of their handle (default: true)
 - `noVia`: Do not notify reposters of likes and reposts (default: true)
+- `tidSuffix`: Set a vanity suffix at the end of your posts' rkeys (max 6 characters)
 
 ## Building
 
