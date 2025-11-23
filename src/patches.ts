@@ -200,7 +200,7 @@ if (settings.noVia) {
 
 if (settings.tidSuffix) {
   const maxLen = 6; // any more than this is probably too much precision loss, but what do I know, I'm not a doctor
-  const find = /,(.)=(.{1,2})\.TID\.next\(.\);/;
+  const find = /(.)=(.{1,2})\.TID\.next\(.\);/;
   const suffix = settings.tidSuffix.slice(0, maxLen);
 
   patches.push({
@@ -208,16 +208,10 @@ if (settings.tidSuffix) {
     find,
     replace: {
       match: find,
-      replacement: (orig, tid, obj) =>
-        `;
-      if (${tid}) {
-        ${tid} = ${obj}.TID.next(${tid});
-      } else {
-        // Only set on the first post so that it doesn't blow up with threads
-        ${tid} = ${obj}.TID.fromStr(${obj}.TID.next().toString().slice(0, -${suffix.length}) + ${
+      replacement: (_, tid, obj) =>
+        `${tid} = ${tid} ? ${obj}.TID.next(${tid}) : ${obj}.TID.fromStr(${obj}.TID.next(${tid}).toString().slice(0, -${suffix.length}) + ${
           JSON.stringify(suffix)
-        });
-      }`
+        });`
     }
   });
 }
