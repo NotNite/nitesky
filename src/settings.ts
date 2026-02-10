@@ -1,9 +1,10 @@
-type Settings = {
+export type Settings = {
   customAccent?: string;
   noJpeg: boolean;
   forceDidLink: boolean;
   noVia: boolean;
   tidSuffix?: string;
+  disableBskyMod: boolean;
 };
 
 const localStorageKey = "nitesky-settings";
@@ -12,7 +13,8 @@ const defaultSettings: Settings = {
   noJpeg: true,
   forceDidLink: true,
   noVia: true,
-  tidSuffix: undefined
+  tidSuffix: undefined,
+  disableBskyMod: false
 };
 
 function readSettings(): Settings {

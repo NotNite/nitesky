@@ -33,6 +33,9 @@ nitesky doesn't have a GUI for settings (yet?), just edit `nitesky-settings` in 
 - `forceDidLink`: Copies links with the user's DID instead of their handle (default: true)
 - `noVia`: Do not notify reposters of likes and reposts (default: true)
 - `tidSuffix`: Set a vanity suffix at the end of your posts' rkeys (max 6 characters)
+  - :warning: setting this improperly could break your ability to write new records
+- `disableBskyMod`: Disable moderation.bsky.app, useful for seeing through `!hide` and whatnot (default: false)
+  - :warning: you should know the obvious implications of disabling moderation
 
 ## Building
 

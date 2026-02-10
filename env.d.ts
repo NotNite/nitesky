@@ -1,6 +1,13 @@
+import type { Settings } from "./src/settings";
+
 declare global {
+  interface Nitesky {
+    settings: Settings;
+  }
+
   interface Window {
     __webpackTools_config: any;
+    nitesky: Nitesky;
   }
 
   const unsafeWindow: Window;

@@ -1,10 +1,16 @@
 import { patches } from "./patches";
+import { settings } from "./settings";
 import type { WebpackModuleFunc, WebpackToolsModule } from "./types";
 
 const modules: WebpackToolsModule[] = [
   {
     name: "niteskyInit",
     needs: []
+  },
+  {
+    name: "disableBskyMod",
+    needs: [],
+    entry: true
   }
 ];
 
@@ -19,6 +25,10 @@ for (const [name, funcStr] of Object.entries(funcs)) {
   const entry = modules.find((m) => m.name === name);
   if (entry != null) entry.run = func;
 }
+
+unsafeWindow.nitesky = {
+  settings
+};
 
 unsafeWindow.__webpackTools_config = {
   siteConfigs: [
