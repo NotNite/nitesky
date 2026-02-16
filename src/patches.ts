@@ -176,7 +176,7 @@ if (settings.noJpeg) {
 if (settings.forceDidLink) {
   // This would call a function to check if the handle is invalid and assign a var holding the DID
   // We can just nop it so it never sets it
-  const regex = /(!.{1,3}\(.\.handle\))&&\(.=.\.handle\)/;
+  const regex = /(\.isInvalidHandle\)\(.\.handle\))&&\(.=.\.handle\)/;
   patches.push({
     name: "forceDidLink",
     find: regex,
