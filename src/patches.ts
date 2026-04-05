@@ -157,7 +157,7 @@ if (settings.noJpeg) {
         `source:${img}.map((img) => {
         const fix = (src) => {
           src = src?.replace("@jpeg", "@png")?.replace("@webp", "@png");
-          if (src && !src.includes("@")) src += "@png";
+          if (src && !src.includes("@") && !src.startsWith("data:")) src += "@png";
           return src;
         };
         return typeof img === "string" ? fix(img) : { ...img, uri: fix(img.uri) };
