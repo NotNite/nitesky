@@ -165,6 +165,23 @@ if (settings.noJpeg) {
       replacement: (_, src) => `.uri);if(${src}){${src}=webpackRequire("nitesky/noJpeg").patchSrc(${src});`
     }
   });
+
+  // Prevents PNGs from becoming JPEGs on upload
+  // https://github.com/bluesky-social/social-app/blob/3685439ffb827fbad95b0244d28abdae6549ef4b/src/state/gallery.ts#L203
+  patches.push({
+    name: "noJpeg3",
+    find: '"Failed to convert blob to data URI"',
+    replace: [
+      {
+        match: /format:(.)\.SaveFormat\.JPEG,/,
+        replacement: (_, saveFormat) => `format:${saveFormat}.SaveFormat.PNG,`
+      },
+      {
+        match: 'mime:"image/jpeg",',
+        replacement: 'mime:"image/png",'
+      }
+    ]
+  });
 }
 
 if (settings.forceDidLink) {
