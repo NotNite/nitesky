@@ -1,5 +1,5 @@
 import { settings } from "./settings";
-import { WebpackToolsPatch } from "./types";
+import type { WebpackToolsPatch } from "./types";
 
 export const patches: WebpackToolsPatch[] = [];
 
@@ -60,7 +60,7 @@ if (settings.customAccent != null) {
     find: /#1083fe/g,
     replace: {
       match: /#1083fe/g,
-      replacement: "#" + accent
+      replacement: `#${accent}`
     }
   });
 
@@ -81,16 +81,12 @@ if (settings.customAccent != null) {
         } as const;
 
         const color = rawColor as AlfColor;
-        const intensity = parseInt(intensityStr);
+        const intensity = parseInt(intensityStr, 10);
 
         let hsl: string;
         if (color === "contrast") {
           // Contrast is handled slightly differently
-          const saturation = intensity >= 800
-            ? "28%"
-            : intensity >= 600
-            ? "24%"
-            : "20%";
+          const saturation = intensity >= 800 ? "28%" : intensity >= 600 ? "24%" : "20%";
 
           const lightnessTable: Record<number, string> = {
             0: "100%",
@@ -139,7 +135,7 @@ if (settings.customAccent != null) {
           hsl = `hsl(${hues[color]}, ${saturationTable[color]}, ${lightnessTable[intensity]})`;
         }
 
-        return `${color}_${intensity}:\"${hsl}\"`;
+        return `${color}_${intensity}:"${hsl}"`;
       }
     }
   });
@@ -213,9 +209,9 @@ if (settings.tidSuffix) {
     replace: {
       match: find,
       replacement: (_, tid, obj) =>
-        `${tid} = ${tid} ? ${obj}.TID.next(${tid}) : ${obj}.TID.fromStr(${obj}.TID.next(${tid}).toString().slice(0, -${suffix.length}) + ${
-          JSON.stringify(suffix)
-        });`
+        `${tid} = ${tid} ? ${obj}.TID.next(${tid}) : ${obj}.TID.fromStr(${obj}.TID.next(${tid}).toString().slice(0, -${suffix.length}) + ${JSON.stringify(
+          suffix
+        )});`
     }
   });
 }

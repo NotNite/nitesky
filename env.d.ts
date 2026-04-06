@@ -15,5 +15,3 @@ declare global {
   const WEBPACKTOOLS_RUNTIME: string;
   const NITESKY_WP_MODULES: Record<string, string>;
 }
-
-export {};

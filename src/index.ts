@@ -20,7 +20,7 @@ for (const [name, funcStr] of Object.entries(funcs)) {
     "module",
     "exports",
     "require",
-    funcStr + "\nmodule.exports = nitesky;"
+    `${funcStr}\nmodule.exports = nitesky;`
   ) as WebpackModuleFunc;
   const entry = modules.find((m) => m.name === name);
   if (entry != null) entry.run = func;

@@ -1,4 +1,4 @@
-import WebpackRequire from "./require";
+import type WebpackRequire from "./require";
 
 export type WebpackModule = {
   id: string | number;
@@ -12,11 +12,7 @@ export type WebpackRequireType = typeof WebpackRequire & {
   e: (module: number | string) => Promise<void>;
 };
 
-export type WebpackModuleFunc = (
-  module: any,
-  exports: any,
-  require: WebpackRequireType
-) => void;
+export type WebpackModuleFunc = (module: any, exports: any, require: WebpackRequireType) => void;
 
 export type WebpackToolsSiteConfig = {
   name: string;

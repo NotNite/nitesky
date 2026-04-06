@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 // This build script is a bunch of dumb hacks to keep it in one build
+import fs from "node:fs";
+import path from "node:path";
 import * as esbuild from "esbuild";
-import fs from "fs";
-import path from "path";
 
 const prod = process.env.NODE_ENV === "production";
 const watch = process.argv.includes("--watch");
@@ -10,7 +10,7 @@ const clean = process.argv.includes("--clean");
 
 const external = [];
 
-let lastMessages = new Set();
+const lastMessages = new Set();
 /** @type {import("esbuild").Plugin} */
 const deduplicatedLogging = {
   name: "deduplicated-logging",
@@ -78,8 +78,9 @@ const packager = {
         }
       }
 
-      const final = banner
-        + template
+      const final =
+        banner +
+        template
           .replace("NITESKY_WP_MODULES", JSON.stringify(webpackModules))
           // Dumb hack to dodge globalName
           .replace("var nitesky =", "");
