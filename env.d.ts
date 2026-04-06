@@ -1,4 +1,5 @@
 import type { Settings } from "./src/settings";
+import type { WebpackToolsConfig } from "./src/types";
 
 declare global {
   interface Nitesky {
@@ -6,7 +7,7 @@ declare global {
   }
 
   interface Window {
-    __webpackTools_config: any;
+    __webpackTools_config: WebpackToolsConfig;
     nitesky: Nitesky;
   }
 

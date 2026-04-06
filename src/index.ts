@@ -4,13 +4,17 @@ import type { WebpackModuleFunc, WebpackToolsModule } from "./types";
 
 const modules: WebpackToolsModule[] = [
   {
-    name: "niteskyInit",
-    needs: []
-  },
-  {
     name: "disableBskyMod",
     needs: [],
     entry: true
+  },
+  {
+    name: "noJpeg",
+    needs: []
+  },
+  {
+    name: "tidSuffix",
+    needs: []
   }
 ];
 
@@ -30,22 +34,25 @@ unsafeWindow.nitesky = {
   settings
 };
 
-unsafeWindow.__webpackTools_config = {
-  siteConfigs: [
-    {
-      name: "bluesky",
-      chunkObject: "webpackChunkweb",
-      webpackVersion: "5",
-      matchSites: ["bsky.app"],
-      patchAll: true,
-      injectSpacepack: true,
-      patchEntryChunk: true,
+unsafeWindow.__webpackTools_config ??= { siteConfigs: [] };
+unsafeWindow.__webpackTools_config.siteConfigs.push({
+  name: "bluesky",
+  chunkObject: "webpackChunkweb",
+  webpackVersion: "5",
+  matchSites: ["bsky.app"],
 
-      patches,
-      modules
-    }
-  ]
-};
+  patchAll: true,
+  injectSpacepack: true,
+  patchEntryChunk: true,
+
+  patches,
+  modules: modules
+    .filter((m) => m.run != null)
+    .map((m) => ({
+      ...m,
+      name: `nitesky/${m.name}`
+    }))
+});
 
 // https://moonlight-mod.github.io/webpackTools/webpackTools.runtime.json
 GM_addElement("script", {

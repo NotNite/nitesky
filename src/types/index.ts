@@ -18,6 +18,7 @@ export type WebpackToolsSiteConfig = {
   name: string;
   chunkObject: string;
   webpackVersion: "4" | "5";
+  matchSites?: string[];
   patchAll?: boolean;
   modules?: WebpackToolsModule[];
   patches?: WebpackToolsPatch[];

@@ -4,6 +4,8 @@ import type { WebpackToolsPatch } from "./types";
 export const patches: WebpackToolsPatch[] = [];
 
 if (settings.customAccent != null) {
+  // TODO: maybe we should use the original values as a deviation from a standard color
+  // (right now we just overwrite saturation/lightness which means you can't represent some shades of colors)
   function rgbToHsl(rgb: string): number {
     const r = parseInt(rgb.slice(0, 2), 16) / 255;
     const g = parseInt(rgb.slice(2, 4), 16) / 255;
@@ -149,15 +151,7 @@ if (settings.noJpeg) {
     find: regex,
     replace: {
       match: regex,
-      replacement: (_, img) =>
-        `source:${img}.map((img) => {
-        const fix = (src) => {
-          src = src?.replace("@jpeg", "@png")?.replace("@webp", "@png");
-          if (src && !src.includes("@") && !src.startsWith("data:")) src += "@png";
-          return src;
-        };
-        return typeof img === "string" ? fix(img) : { ...img, uri: fix(img.uri) };
-      }),placeholder:`
+      replacement: (_, img) => `source:${img}.map(webpackRequire("nitesky/noJpeg").patchUri),placeholder:`
     }
   });
 
@@ -168,7 +162,7 @@ if (settings.noJpeg) {
     find: "Image: asset with ID ",
     replace: {
       match: /\.uri\);if\((.)\){/,
-      replacement: (_, src) => `.uri);if(${src}){${src}=${src}.replace("@jpeg", "@png");`
+      replacement: (_, src) => `.uri);if(${src}){${src}=webpackRequire("nitesky/noJpeg").patchSrc(${src});`
     }
   });
 }
@@ -199,19 +193,13 @@ if (settings.noVia) {
 }
 
 if (settings.tidSuffix) {
-  const maxLen = 6; // any more than this is probably too much precision loss, but what do I know, I'm not a doctor
   const find = /(.)=(.{1,2})\.TID\.next\(.\);/;
-  const suffix = settings.tidSuffix.slice(0, maxLen);
-
   patches.push({
     name: "tidSuffix",
     find,
     replace: {
       match: find,
-      replacement: (_, tid, obj) =>
-        `${tid} = ${tid} ? ${obj}.TID.next(${tid}) : ${obj}.TID.fromStr(${obj}.TID.next(${tid}).toString().slice(0, -${suffix.length}) + ${JSON.stringify(
-          suffix
-        )});`
+      replacement: (_, tid, obj) => `${tid} = webpackRequire("nitesky/tidSuffix").modifyTid(${tid}, ${obj}.TID);`
     }
   });
 }
