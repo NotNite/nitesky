@@ -33,113 +33,88 @@ if (settings.customAccent != null) {
   if (accent.startsWith("#")) accent = accent.slice(1);
   const hue = rgbToHsl(accent);
 
-  patches.push({
-    name: "customAccent",
-    find: "#0085ff",
-    replace: [
-      {
-        match: /blue(.):"#[0-9a-fA-F]{6}"/g,
-        replacement: (_, digit) => `blue${digit}:"#${accent}"`
-      },
-      {
-        match: /{start:"#[0-9a-fA-F]{6}",end:(.{1,3}\.blue3)}/g,
-        replacement: (_, end) => `{start:"#${accent}",end:${end}}`
-      },
-      {
-        match: /brandBlue:"#[0-9a-fA-F]{6}"/g,
-        replacement: `brandBlue:"#${accent}"`
-      },
-      {
-        match: /like:"#[0-9a-fA-F]{6}"/g,
-        // Copy pasted from one of the primary_ colors
-        replacement: `like:"hsl(${hue}, 82%, 60%)"`
-      }
-    ]
-  });
-
-  patches.push({
-    name: "customAccent2",
-    find: /#1083fe/g,
-    replace: {
-      match: /#1083fe/g,
-      replacement: `#${accent}`
-    }
-  });
-
   // patches @bsky.app/alf
   patches.push({
-    name: "customAccent3",
+    name: "customAccent",
     find: ".DEFAULT_PALETTE=",
-    replace: {
-      match: /(primary|positive|negative|contrast)_(\d+):"#[0-9a-fA-F]{6}"/g,
-      replacement: (_, rawColor, intensityStr) => {
-        type AlfColor = "primary" | "positive" | "negative" | "contrast";
+    replace: [
+      // like color
+      {
+        match: '"#EC4899"',
+        replacement: `"hsl(${hue}, 82%, 60%)"`
+      },
+      // main color palette
+      {
+        match: /(primary|positive|negative|contrast)_(\d+):"#[0-9a-fA-F]{6}"/g,
+        replacement: (_, rawColor, intensityStr) => {
+          type AlfColor = "primary" | "positive" | "negative" | "contrast";
 
-        // replaces the old broken behavior. lol
-        const hues = {
-          primary: hue,
-          positive: hue,
-          negative: hue
-        } as const;
+          // replaces the old broken behavior. lol
+          const hues = {
+            primary: hue,
+            positive: hue,
+            negative: hue
+          } as const;
 
-        const color = rawColor as AlfColor;
-        const intensity = parseInt(intensityStr, 10);
+          const color = rawColor as AlfColor;
+          const intensity = parseInt(intensityStr, 10);
 
-        let hsl: string;
-        if (color === "contrast") {
-          // Contrast is handled slightly differently
-          const saturation = intensity >= 800 ? "28%" : intensity >= 600 ? "24%" : "20%";
+          let hsl: string;
+          if (color === "contrast") {
+            // Contrast is handled slightly differently
+            const saturation = intensity >= 800 ? "28%" : intensity >= 600 ? "24%" : "20%";
 
-          const lightnessTable: Record<number, string> = {
-            0: "100%",
-            25: "95%",
-            50: "90%",
-            100: "86%",
-            200: "81%",
-            300: "72%",
-            400: "62%",
-            500: "53%",
-            600: "44%",
-            700: "34%",
-            800: "25%",
-            900: "20%",
-            950: "15%",
-            975: "11%",
-            1000: "6%"
-          };
+            const lightnessTable: Record<number, string> = {
+              0: "100%",
+              25: "95%",
+              50: "90%",
+              100: "86%",
+              200: "81%",
+              300: "72%",
+              400: "62%",
+              500: "53%",
+              600: "44%",
+              700: "34%",
+              800: "25%",
+              900: "20%",
+              950: "15%",
+              975: "11%",
+              1000: "6%"
+            };
 
-          hsl = `hsl(${hues.primary}, ${saturation}, ${lightnessTable[intensity]})`;
-        } else {
-          const lightnessTable: Record<number, string> = {
-            0: `100%`,
-            25: `97%`,
-            50: `95%`,
-            100: `90%`,
-            200: `80%`,
-            300: `70%`,
-            400: `60%`,
-            500: `50%`,
-            600: `42%`,
-            700: `34%`,
-            800: `26%`,
-            900: `18%`,
-            950: `10%`,
-            975: `7%`,
-            1000: `0%`
-          };
+            hsl = `hsl(${hues.primary}, ${saturation}, ${lightnessTable[intensity]})`;
+          } else {
+            const lightnessTable: Record<number, string> = {
+              0: `100%`,
+              25: `97%`,
+              50: `95%`,
+              100: `90%`,
+              200: `80%`,
+              300: `70%`,
+              400: `60%`,
+              500: `50%`,
+              600: `42%`,
+              700: `34%`,
+              800: `26%`,
+              900: `18%`,
+              950: `10%`,
+              975: `7%`,
+              1000: `0%`
+            };
 
-          const saturationTable: Record<Exclude<AlfColor, "contrast">, string> = {
-            primary: "99%",
-            positive: "82%",
-            negative: "91%"
-          };
+            const saturationTable: Record<Exclude<AlfColor, "contrast">, string> = {
+              primary: "99%",
+              positive: "82%",
+              negative: "91%"
+            };
 
-          hsl = `hsl(${hues[color]}, ${saturationTable[color]}, ${lightnessTable[intensity]})`;
+            hsl = `hsl(${hues[color]}, ${saturationTable[color]}, ${lightnessTable[intensity]})`;
+          }
+
+          return `${color}_${intensity}:"${hsl}"`;
         }
-
-        return `${color}_${intensity}:"${hsl}"`;
       }
-    }
+    ]
   });
 }
 
