@@ -77,6 +77,24 @@
     });
     return namedRequireObj;
   }
+  function extractPrivateCache(webpackRequire) {
+    let cache = null;
+    const sym = Symbol();
+    Object.defineProperty(Object.prototype, sym, {
+      get() {
+        cache = this;
+        return { exports: {} };
+      },
+      set() {
+      },
+      configurable: true
+    });
+    webpackRequire(sym);
+    delete Object.prototype[sym];
+    if (cache)
+      delete cache[sym];
+    return cache;
+  }
   function getSpacepack(chunkObject, logSuccess = false) {
     function spacepack(module, exports, webpackRequire) {
       if (logSuccess) {
@@ -86,12 +104,13 @@
           console.log("[wpTools] spacepack loaded in " + chunkObject);
         }
       }
+      const cache = webpackRequire.c ?? extractPrivateCache(webpackRequire);
       function findByExports(keysArg) {
-        if (!webpackRequire.c) {
-          throw new Error("webpack runtime didn't export its moduleCache");
+        if (!cache) {
+          throw new Error("Unable to enumerate webpack module cache");
         }
         const keys = keysArg instanceof Array ? keysArg : [keysArg];
-        return Object.entries(webpackRequire.c).filter(([moduleId, exportCache]) => {
+        return Object.entries(cache).filter(([moduleId, exportCache]) => {
           return !keys.some((searchKey) => {
             return !(exportCache !== void 0 && exportCache !== window && (exports?.[searchKey] || exports?.default?.[searchKey]));
           });
@@ -173,8 +192,8 @@
       const exportedRequire = module.exports.default = exports.default = {
         require: webpackRequire,
         modules: webpackRequire.m,
-        cache: webpackRequire.c,
-        __namedRequire: getNamedRequire(webpackRequire),
+        cache,
+        namedRequire: getNamedRequire(webpackRequire),
         findByCode,
         findByExports,
         findObjectFromKey,
@@ -190,19 +209,15 @@
       if (window.wpTools) {
         const runtimesRegistry = window.wpTools.runtimes;
         if (runtimesRegistry[chunkObject]) {
-          console.warn("[wpTools] Multiple active runtimes for " + chunkObject);
-          let currId = 0;
-          if (runtimesRegistry[chunkObject].__wpTools_multiRuntime_id) {
-            currId = runtimesRegistry[chunkObject].__wpTools_multiRuntime_id;
-          }
-          runtimesRegistry[chunkObject + "_" + currId] = runtimesRegistry[chunkObject];
-          currId++;
-          runtimesRegistry[chunkObject + "_" + currId] = exportedRequire;
-          runtimesRegistry[chunkObject] = exportedRequire;
+          console.warn(
+            `[wpTools] Duplicate runtimes for ${chunkObject}. Spacepack for other runtimes is accessible through wpTools.runtimes if necesary. `
+          );
+          runtimesRegistry[chunkObject].push(exportedRequire);
+        } else {
+          runtimesRegistry[chunkObject] = [exportedRequire];
         }
-        runtimesRegistry[chunkObject] = exportedRequire;
-        window["spacepack_" + chunkObject] = exportedRequire;
       }
+      window["spacepack_" + chunkObject] = exportedRequire;
       window["spacepack"] = exportedRequire;
     }
     spacepack.__wpt_processed = true;
@@ -222,7 +237,7 @@
     } else {
       if (!validationCallback(object[key])) {
         throw new ConfigValidationError(
-          `Failed to validate ${key} in ${name}. The following check failed: 
+          `Failed to validate ${key} in ${name}. The following check failed:
 ${validationCallback.toString()}`
         );
       }
@@ -339,6 +354,13 @@ ${validationCallback.toString()}`
           continue;
         }
         let funcStr = Function.prototype.toString.apply(modules[id]);
+        if (!funcStr.startsWith("function")) {
+          let paramsEndIndex = funcStr.indexOf(")");
+          if (paramsEndIndex === -1 || !funcStr.slice(paramsEndIndex + 1).trim().startsWith("=>")) {
+            let startIndex = funcStr.indexOf("(");
+            funcStr = "function" + funcStr.slice(startIndex);
+          }
+        }
         const matchingPatches = [];
         for (const patch of this.patchesToApply) {
           if (matchModule(funcStr, patch.find)) {
@@ -601,5 +623,3 @@ ${validationCallback.toString()}`
     });
   }
 })();
-
-//# sourceURL=wpTools
