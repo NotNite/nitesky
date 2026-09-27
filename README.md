@@ -48,11 +48,9 @@ npm run build
 
 For building nitesky, just run `npm run build` and add `nitesky.user.js` to your userscript manager. You can get hot reload with `npm run dev`, a local web server (e.g. `npx serve`), and a userscript manager that can poll for updates (e.g. Violentmonkey's "Track external edits" button).
 
-It's suggested to use Chrome for developing, because it has better DevTools for inspecting Webpack modules. The build system is a hacked together abomination using esbuild, based off of [moonlight][moonlight]'s old build scripts. The [webpackTools][webpackTools] runtime is updated by hand when I feel like it. For contributing, please format with [dprint](https://dprint.dev/). There's also ESLint but I don't really care about it to be honest.
-
 ## Credits
 
-nitesky uses [webpackTools][webpackTools] for patching. Some other code (build script/types) is taken from [moonlight][moonlight].
+Some nitesky code is taken from [webpackTools][webpackTools] and [moonlight][moonlight].
 
-[webpackTools]: <https://github.com/moonlight-mod/webpackTools>
-[moonlight]: <https://github.com/moonlight-mod/moonlight>
+[webpackTools]: https://github.com/moonlight-mod/webpackTools
+[moonlight]: https://github.com/moonlight-mod/moonlight

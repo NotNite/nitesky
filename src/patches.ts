@@ -1,7 +1,7 @@
+import type { Patch } from "./metro";
 import { settings } from "./settings";
-import type { WebpackToolsPatch } from "./types";
 
-export const patches: WebpackToolsPatch[] = [];
+export const patches: Patch[] = [];
 
 if (settings.customAccent != null) {
   // TODO: maybe we should use the original values as a deviation from a standard color
@@ -40,12 +40,12 @@ if (settings.customAccent != null) {
     replace: [
       // like color
       {
-        match: '"#EC4899"',
-        replacement: `"hsl(${hue}, 82%, 60%)"`
+        match: "'#EC4899'",
+        replacement: `'hsl(${hue}, 82%, 60%)'`
       },
       // main color palette
       {
-        match: /(primary|positive|negative|contrast)_(\d+):"#[0-9a-fA-F]{6}"/g,
+        match: /(primary|positive|negative|contrast)_(\d+):'#[0-9a-fA-F]{6}'/g,
         replacement: (_, rawColor, intensityStr) => {
           type AlfColor = "primary" | "positive" | "negative" | "contrast";
 
@@ -111,7 +111,7 @@ if (settings.customAccent != null) {
             hsl = `hsl(${hues[color]}, ${saturationTable[color]}, ${lightnessTable[intensity]})`;
           }
 
-          return `${color}_${intensity}:"${hsl}"`;
+          return `${color}_${intensity}:'${hsl}'`;
         }
       }
     ]
@@ -119,41 +119,30 @@ if (settings.customAccent != null) {
 }
 
 if (settings.noJpeg) {
-  // This targets what I think is the gallery thumbnails?
-  const regex = /source:(.\(.\)),placeholder:/;
+  // This targets the Expo image component
   patches.push({
     name: "noJpeg",
-    find: regex,
+    find: "/[\\xab\\xbb]/g",
     replace: {
-      match: regex,
-      replacement: (_, img) => `source:${img}.map(webpackRequire("nitesky/noJpeg").patchUri),placeholder:`
-    }
-  });
-
-  // This targets the function that makes the `background-image: url()` style
-  // I think this is the Expo image component? Maybe?
-  patches.push({
-    name: "noJpeg2",
-    find: "Image: asset with ID ",
-    replace: {
-      match: /\.uri\);if\((.)\){/,
-      replacement: (_, src) => `.uri);if(${src}){${src}=webpackRequire("nitesky/noJpeg").patchSrc(${src});`
+      match: /(forwardRef\(\({source:(.),.+?)(const .=\(0,.\(.\[0\]\).useId)/,
+      replacement: (_, before, source, after) =>
+        `${before}${source}=window.nitesky.hatches.patchImgUri(${source});${after}`
     }
   });
 
   // Prevents PNGs from becoming JPEGs on upload
   // https://github.com/bluesky-social/social-app/blob/3685439ffb827fbad95b0244d28abdae6549ef4b/src/state/gallery.ts#L203
   patches.push({
-    name: "noJpeg3",
-    find: '"Failed to convert blob to data URI"',
+    name: "noJpeg2",
+    find: "'Failed to convert blob to data URI'",
     replace: [
       {
         match: /format:(.)\.SaveFormat\.JPEG,/,
         replacement: (_, saveFormat) => `format:${saveFormat}.SaveFormat.PNG,`
       },
       {
-        match: 'mime:"image/jpeg",',
-        replacement: 'mime:"image/png",'
+        match: "mime:'image/jpeg',",
+        replacement: "mime:'image/png',"
       }
     ]
   });
@@ -176,22 +165,22 @@ if (settings.forceDidLink) {
 if (settings.noVia) {
   patches.push({
     name: "noVia",
-    find: "toISOString(),via:",
+    find: ".currentDatetimeString)(),via:",
     replace: {
-      match: /(?<=\.toISOString\(\)),via:./g,
+      match: /(?<=\.currentDatetimeString\)\(\)),via:./g,
       replacement: ""
     }
   });
 }
 
 if (settings.tidSuffix) {
-  const find = /(.)=(.{1,2})\.TID\.next\(.\);/;
+  const find = /(.)=(r\(_d\[\d+\]\))\.TID\.next\(.\);/;
   patches.push({
     name: "tidSuffix",
     find,
     replace: {
       match: find,
-      replacement: (_, tid, obj) => `${tid} = webpackRequire("nitesky/tidSuffix").modifyTid(${tid}, ${obj}.TID);`
+      replacement: (_, tid, obj) => `${tid} = window.nitesky.hatches.modifyTid(${tid}, ${obj}.TID);`
     }
   });
 }

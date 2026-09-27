@@ -1,9 +1,11 @@
+import { settings } from "../settings";
+
 const LABELERS_HEADER = "atproto-accept-labelers";
 const MODERATION_DID = "did:plc:ar7c4by46qjdydhdevvrndac";
 
-if (window.nitesky.settings.disableBskyMod) {
-  const origFetch = globalThis.fetch;
-  globalThis.fetch = (input, init) => {
+if (settings.disableBskyMod) {
+  const origFetch = unsafeWindow.fetch;
+  unsafeWindow.fetch = (input, init) => {
     if (input instanceof Request) {
       const labelers = input.headers.get(LABELERS_HEADER);
       if (labelers) {

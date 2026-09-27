@@ -1,4 +1,4 @@
-export function patchSrc(src?: string) {
+function patchImgSrc(src?: string) {
   if (!src) return src;
   src = src?.replace("@jpeg", "@png")?.replace("@webp", "@png");
 
@@ -7,10 +7,10 @@ export function patchSrc(src?: string) {
   return src;
 }
 
-export function patchUri(img?: { uri?: string }) {
+export function patchImgUri(img?: { uri?: string }) {
   if (!img) {
     return img;
   } else {
-    return { ...img, uri: patchSrc(img.uri) };
+    return { ...img, uri: patchImgSrc(img.uri) };
   }
 }

@@ -2,8 +2,11 @@ import type { Settings } from "./src/settings";
 import type { WebpackToolsConfig } from "./src/types";
 
 declare global {
+  interface NiteskyHatches {}
+
   interface Nitesky {
     settings: Settings;
+    hatches: NiteskyHatches;
   }
 
   interface Window {

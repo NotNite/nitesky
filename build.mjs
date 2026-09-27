@@ -38,10 +38,27 @@ const deduplicatedLogging = {
   }
 };
 
-const outdir = path.resolve("dist");
-const runtime = fs.readFileSync("webpackTools.runtime.js", "utf8");
-const banner = `
-// ==UserScript==
+async function build() {
+  /** @type {import("esbuild").BuildOptions} */
+  const esbuildConfig = {
+    entryPoints: ["src/index.ts"],
+    outfile: path.resolve("dist", "nitesky.user.js"),
+
+    format: "iife",
+    platform: "browser",
+
+    treeShaking: true,
+    bundle: true,
+    minify: prod,
+    sourcemap: "inline",
+
+    external,
+
+    logLevel: "silent",
+    plugins: [deduplicatedLogging],
+
+    banner: {
+      js: `// ==UserScript==
 // @name         nitesky
 // @namespace    https://notnite.com
 // @version      1.0.0
@@ -53,67 +70,7 @@ const banner = `
 // @grant        GM_addElement
 // @run-at       document-start
 // ==/UserScript==
-`.trimStart();
-
-/** @type {import("esbuild").Plugin} */
-const packager = {
-  name: "packager",
-  setup(build) {
-    build.onEnd(async (result) => {
-      const webpackModules = {};
-      let template = null;
-      for (const file of result.outputFiles) {
-        const filePath = path.relative(outdir, file.path).replaceAll("\\", "/");
-        const contentsStr = new TextDecoder().decode(file.contents);
-        if (filePath === "index.js") {
-          template = contentsStr;
-          continue;
-        }
-
-        let [type, name] = filePath.split("/");
-        if (name == null) continue;
-        name = name.replace(/\.js$/, "");
-        if (type === "webpackModules") {
-          webpackModules[name] = contentsStr;
-        }
-      }
-
-      const final =
-        banner +
-        template
-          .replace("NITESKY_WP_MODULES", JSON.stringify(webpackModules))
-          // Dumb hack to dodge globalName
-          .replace("var nitesky =", "");
-
-      // jank as hell lol
-      if (!fs.existsSync("./dist")) fs.mkdirSync("./dist");
-      fs.writeFileSync("./dist/nitesky.user.js", final);
-    });
-  }
-};
-
-async function build() {
-  /** @type {import("esbuild").BuildOptions} */
-  const esbuildConfig = {
-    entryPoints: ["src/index.ts", "src/webpackModules/*.ts"],
-    write: false,
-    outdir,
-
-    format: "iife",
-    globalName: "nitesky", // so we can return the value of the wp modules
-    platform: "browser",
-
-    treeShaking: true,
-    bundle: true,
-    minify: prod,
-    sourcemap: "inline",
-
-    external,
-
-    logLevel: "silent",
-    plugins: [deduplicatedLogging, packager],
-    define: {
-      WEBPACKTOOLS_RUNTIME: JSON.stringify(runtime)
+`
     }
   };
 

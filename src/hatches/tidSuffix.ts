@@ -1,3 +1,5 @@
+import { settings } from "../settings";
+
 // this works out to about a second of precision loss, which seems acceptable
 // (Base32 is 5 bits per character = 30 bits lost, latter 10 bits are clock ID,
 // other 20 are microseconds, 0b1_00000_00000_00000_00000/1_000_000 = 1.048576)
@@ -14,7 +16,7 @@ export function modifyTid(tid: TID | undefined, obj: typeof TID) {
   if (tid) {
     return nextTid;
   } else {
-    const suffix = window.nitesky.settings.tidSuffix!.slice(0, maxLen);
+    const suffix = settings.tidSuffix!.slice(0, maxLen);
     const moddedTid = nextTid.toString().slice(0, -suffix.length) + suffix;
     return obj.fromStr(moddedTid);
   }

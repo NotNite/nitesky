@@ -5,6 +5,7 @@ export type Settings = {
   noVia: boolean;
   tidSuffix?: string;
   disableBskyMod: boolean;
+  patchAll: boolean;
 };
 
 const localStorageKey = "nitesky-settings";
@@ -14,7 +15,8 @@ const defaultSettings: Settings = {
   forceDidLink: true,
   noVia: true,
   tidSuffix: undefined,
-  disableBskyMod: false
+  disableBskyMod: false,
+  patchAll: false
 };
 
 function readSettings(): Settings {

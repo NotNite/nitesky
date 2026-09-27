@@ -1,60 +1,12 @@
-import { patches } from "./patches";
+import hatches from "./hatches";
+import { installPatcher, patchesToApply } from "./metro";
 import { settings } from "./settings";
-import type { WebpackModuleFunc, WebpackToolsModule } from "./types";
-
-const modules: WebpackToolsModule[] = [
-  {
-    name: "disableBskyMod",
-    needs: [],
-    entry: true
-  },
-  {
-    name: "noJpeg",
-    needs: []
-  },
-  {
-    name: "tidSuffix",
-    needs: []
-  }
-];
-
-const funcs = NITESKY_WP_MODULES;
-for (const [name, funcStr] of Object.entries(funcs)) {
-  const func = new Function(
-    "module",
-    "exports",
-    "require",
-    `${funcStr}\nmodule.exports = nitesky;`
-  ) as WebpackModuleFunc;
-  const entry = modules.find((m) => m.name === name);
-  if (entry != null) entry.run = func;
-}
 
 unsafeWindow.nitesky = {
-  settings
+  settings,
+  hatches,
+  // @ts-expect-error
+  patchesToApply
 };
 
-unsafeWindow.__webpackTools_config ??= { siteConfigs: [] };
-unsafeWindow.__webpackTools_config.siteConfigs.push({
-  name: "bluesky",
-  chunkObject: "webpackChunkweb",
-  webpackVersion: "5",
-  matchSites: ["bsky.app"],
-
-  patchAll: true,
-  injectSpacepack: true,
-  patchEntryChunk: true,
-
-  patches,
-  modules: modules
-    .filter((m) => m.run != null)
-    .map((m) => ({
-      ...m,
-      name: `nitesky/${m.name}`
-    }))
-});
-
-// https://moonlight-mod.github.io/webpackTools/webpackTools.runtime.json
-GM_addElement("script", {
-  textContent: WEBPACKTOOLS_RUNTIME
-});
+installPatcher();
